@@ -1,6 +1,7 @@
 ---
 - name: roles/base/tasks/mandatory.yml
   command: echo
+
 - name: Install tools required for CentOS 7.x
   yum: 
     name:
@@ -24,7 +25,13 @@
       - man
       - npm
   become: yes
-  when: ansible_distribution_major_version == '7'
+  when: (
+      not USE_AMAZONLINUX2
+      and ansible_distribution_major_version == '7'
+    ) or  (
+      USE_AMAZONLINUX2
+      and ansible_distribution_major_version == '2'
+    )
 
 - name: Install tools required for CentOS 6.x
   yum:

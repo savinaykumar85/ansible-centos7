@@ -1,5 +1,8 @@
 # Basic Congiguration Control
 ---
+- name: roles/base/tasks/main.yml
+  command: echo
+
 - name: Check if hosts exists
   stat: 
     path: /etc/ansible/hosts
@@ -11,11 +14,35 @@
   register: host_vars_localhost_yml
 
 - name: Check minimum requirement
-  command: echo
-  failed_when: |
+  fail:
+  when: |
     etc_ansible_hosts.stat.exists != true        or
-    host_vars_localhost_yml.stat.exists != true  or
-    ansible_distribution != 'CentOS' 
+    host_vars_localhost_yml.stat.exists != true
+
+- set_fact: 
+    distribution_ok: false
+
+- name: Check for CentOS7
+  set_fact:
+    distribution_ok: true
+  when: |
+    not USE_AMAZONLINUX2 
+    and ansible_distribution == 'CentOS' 
+    and ansible_distribution_version == '7'
+
+- name: Check for AmazonLinux2
+  set_fact:
+    distribution_ok: true
+  when: |
+    USE_AMAZONLINUX2 
+    and ansible_distribution == 'Amazon'
+    and ansible_distribution_version == '2'
+
+# - debug: var=distribution_ok
+
+- name: Check distribution
+  fail:
+  when: not distribution_ok
 
 - name: Check if EC2
   stat:

@@ -3,8 +3,9 @@
   command: echo
 
 - name: Validate PHP_REPO variable
-  command: echo
-  failed_when:
+  fail:
+    msg: PHP_REPO is not valid
+  when:
     - PHP_REPO != 'webtatic56'
     - PHP_REPO != 'webtatic72'
     - PHP_REPO != 'remi56'
@@ -21,11 +22,18 @@
     path: /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-{{ _V }}
   register: epel_key
 
+- name: epel for Amazon-Linux
+  command: amazon-linux-extras install epel
+  become: yes
+  when: USE_AMAZONLINUX2
+
 - name: Install webtatic repositories
   yum:
     name: "{{ PHP_REPO_PKG }}"
   become: yes
-  when: PHP_REPO == 'webtatic56' or PHP_REPO == 'webtatic72'
+  when: |
+    PHP_REPO == 'webtatic56' 
+    or PHP_REPO == 'webtatic72' 
 
 - name: Install remi repositories
   yum:
