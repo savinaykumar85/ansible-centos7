@@ -1,5 +1,6 @@
 # group_vars/all - Common constants among all environment
 ---
+USE_AMAZONLINUX2:     false
 WWW_BASE:       /var/www
 WEBSERVER_USER: nginx
 WEBSERVER_GROUP: nginx
